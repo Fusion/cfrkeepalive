@@ -1,0 +1,27 @@
+#!/usr/bin/python
+
+import os
+import time
+from daemon import runner
+
+import subprocess
+
+class DaemonBody():
+
+    def __init__(self):
+        self.stdin_path = '/dev/null'
+        self.stdout_path = '/dev/null'
+        self.stderr_path = '/dev/tty'
+        self.pidfile_path = '/var/run/cfrkeepalive.pid'
+        self.pidfile_timeout = 5
+        self.waitfor = 60
+        self.pingcmd = ['/usr/bin/curl', '--silent', 'http://clicdev.com/cfrkeepalive.php']
+
+    def run(self):
+        while True:
+            subprocess.call(self.pingcmd)
+            time.sleep(self.waitfor)
+
+
+daemon_runner = runner.DaemonRunner(DaemonBody())
+daemon_runner.do_action()
